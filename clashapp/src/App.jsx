@@ -7,11 +7,18 @@ function App() {
   const [count, setCount] = useState(0);
   const [data, setData] = useState([]);
   const [champ, setChamp] = useState([]);
+  const [playerName, setPlayerName] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [playerResults, setPlayerResults] = useState({});
+  const [error, setError] = useState(false);
+
   const cards = import.meta.env.VITE_CARDS;
   const clashuser = import.meta.env.VITE_CLASHUSER;
   const userChest = import.meta.env.VITE_USERCHEST;
   const clan = import.meta.env.VITE_CLAN;
   const champs = import.meta.env.VITE_CHAMPS;
+
+  // console.log(playerName);
 
   const getCards = async () => {
     // const url = `${cards}?user=${clashuser}&chest=${userChest}&clan=${clan}`;
@@ -50,52 +57,101 @@ function App() {
     setChamp(Object.values(respuesta.data.data));
   };
 
-  useEffect(() => {
-    // getCards();
-    // getuser();
-    // getUserChest()
-    // getUserClan()
-    getAllChamps();
-  }, []);
+  // setPlayer('payku')
 
-  // console.log(data)
+  // const getPlayerName = async (playerName) => {
 
-  // console.log(data.data)
-  // console.log(Object.values(data.data))
-  // Object.value(data.data)
-  // data.data === undefined ? console.log("no hay data")
-  // : (Object.values(data.data))
+  //   const url = `http://localhost:3307/lol/player`;
+  //   const respuesta = await axios.get(url,{
+  //     params: {
+  //       playerName: playerName
+  //     }
+  //   });
 
-  // console.log(data.data)
-  // console.log(champ)
+  // }
 
-  console.log(data);
+  // const getPlayerName =  () => {
+  //   axios.get('http://localhost:3307/lol/player',{
+  //       params: {
+  //         playerName: searchText
+  //       }
+  //     })
+  //     .then((respuesta)=>{console.log(respuesta.data)})
+  //     .catch((error)=>{console.log(error)})
+  //     // console.log(playerName + 'entro');
+  // }
+
+  const getPlayerName = async () => {
+    
+      if (searchText === "") {
+        setError(true);
+        setTimeout(() => {
+          setError(false);
+        }, 4000);
+      } else {
+        const url = `https://blogporta.herokuapp.com/lol/player`;
+        const respuesta = await axios.get(url, {
+          params: {
+            playerName: searchText,
+          },
+        });
+        // console.log(respuesta.data);
+        setPlayerResults(respuesta.data);
+      }
+    
+  };
+
+  // useEffect(() => {
+  //   // getCards();
+  //   // getuser();
+  //   // getUserChest()
+  //   // getUserClan()
+  //   // getAllChamps(player);
+  //   getPlayerName(playerName);
+  // }, []);
+
+  //  console.log(player)
 
   return (
     <div className="as">
       <p>Hola mundo desde vite</p>
       {/* <p>{data}</p> */}
 
-      <div className=" grid grid-cols-2 gap-4">
-        {champ.map((champ, index) => {
-          return (
-            <div key={champ.key}>
-              {/* <img src={`https://ddragon.leagueoflegends.com/cdn/12.15.1/img/champion/${champ.image.full}`} alt="" /> */}
-              {/* <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.id}_0.jpg`} alt="" /> */}
-              <img
-                src={`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg`}
-                alt=""
-              />
-              <p>{champ.name}</p>
-              <p>{champ.version}</p>
-              <p>{champ.tags}</p>
-              <p>{champ.title}</p>
-              <p>{champ.partype}</p>
-              <p>{champ.blurb}</p>
-            </div>
-          );
-        })}
-      </div>
+      <input type="text" onChange={(e) => setSearchText(e.target.value)} />
+
+      <button onClick={getPlayerName}>Enviar </button>
+
+
+      {/* {error ? (
+        <p>Ingrese un nombre de jugador correcto</p>
+      ) : (
+        <>
+          <p>{playerResults.name}</p>
+          <p>{playerResults.id}</p>
+          <img
+            src={`http://ddragon.leagueoflegends.com/cdn/12.16.1/img/profileicon/${playerResults.profileIconId}.png`}
+            alt=""
+          />
+        </>
+      )} */}
+
+
+
+
+
+
+      {
+        Object.keys(playerResults).length > 0 ? (
+          <>
+            <p>{playerResults.name}</p>
+            <p>{playerResults.id}</p>
+            <img
+            src={`http://ddragon.leagueoflegends.com/cdn/12.16.1/img/profileicon/${playerResults.profileIconId}.png`}
+            alt=""
+          />
+          </>
+        ) : ('no hay resultados')
+      }
 
       <div className=" grid grid-cols-7">
         {/* {
